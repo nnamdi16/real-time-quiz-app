@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from '../../api/user/user.controller';
 import { UserService } from '../../api/user/user.service';
-import { registerPayload, userData } from './stub/user.stub';
-import { RegisterUserDto } from 'src/api/user/user.dto';
-import { HttpStatus } from '@nestjs/common';
+import {
+  loginPayload,
+  loginResponse,
+  registerPayload,
+  signUpResponse,
+} from './stub/user.stub';
 
 describe('User controller', () => {
   let userController: UserController;
@@ -17,15 +20,10 @@ describe('User controller', () => {
           useValue: {
             registerUser: jest
               .fn()
-              .mockImplementation((payload: RegisterUserDto) =>
-                Promise.resolve({
-                  statusCode: HttpStatus.CREATED,
-                  message: 'User Registration Successful',
-                  status: 'success',
-                  data: { ...payload, ...userData() },
-                  error: null,
-                }),
-              ),
+              .mockImplementation(() => Promise.resolve(signUpResponse)),
+            login: jest
+              .fn()
+              .mockImplementation(() => Promise.resolve(loginResponse)),
           },
         },
       ],
@@ -36,16 +34,16 @@ describe('User controller', () => {
   describe('register() method should successfully save a user', () => {
     test('should save a user', async () => {
       const data = await userController.register({
-        ...registerPayload(),
+        ...registerPayload,
         email: 'Jane@example.com',
       });
-      expect(data).toEqual({
-        data: userData(),
-        error: null,
-        message: 'User Registration Successful',
-        status: 'success',
-        statusCode: 201,
-      });
+      expect(data).toEqual(signUpResponse);
+    });
+  });
+  describe('login() method should successfully authenticate a user', () => {
+    test('authenticate a user', async () => {
+      const data = await userController.login(loginPayload);
+      expect(data).toEqual(loginResponse);
     });
   });
 });
