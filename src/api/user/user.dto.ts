@@ -7,7 +7,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { UUID } from 'crypto';
 
 export class RegisterUserDto {
   @IsEmail({}, { message: 'Please enter a valid email' })
@@ -53,3 +54,26 @@ export class RegisterUserDto {
   })
   username: string;
 }
+
+export class LoginDto extends PickType(RegisterUserDto, ['username']) {
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    description: 'password',
+    example: 'haJhsjk@#4jaiijsk',
+    required: true,
+    title: 'newPassword',
+  })
+  password: string;
+}
+
+export type TokenData = {
+  id: UUID;
+  email: string;
+  username: string;
+};
+
+export type TokenDto = {
+  accessToken: string;
+  refreshToken: string;
+};
