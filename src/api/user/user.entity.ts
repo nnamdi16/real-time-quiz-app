@@ -11,4 +11,7 @@ export class UserEntity extends BaseEntity {
 
   @Column({ unique: true })
   public email: string;
+
+  @Column({ nullable: true })
+  public refreshToken: string;
 }
