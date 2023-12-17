@@ -11,15 +11,13 @@ class EncryptService {
   async encrypt(plainText: string) {
     const iv = crypto.randomBytes(IV_LENGTH);
 
-    const key =
-      process.env.ENCRYPTION_KEY || this.config.get(ENV.ENCRYPTION_KEY);
-    console.log(key);
+    const key = Buffer.from(this.config.get(ENV.ENCRYPTION_KEY));
 
-    const cipher: any = crypto.createCipheriv(
+    const cipher: crypto.CipherGCM = crypto.createCipheriv(
       'AES-256-GCM',
-      Buffer.from(key),
+      key,
       iv,
-    );
+    ) as crypto.CipherGCM;
 
     const encrypted = Buffer.concat([cipher.update(plainText), cipher.final()]);
 
