@@ -9,7 +9,7 @@ import {
   tokenData,
 } from './stub/user.stub';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { UserEntity } from '../../api/user/user.entity';
+import { User } from '../../api/user/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -18,7 +18,7 @@ import EncryptService from '../../util/encryption';
 
 describe('UserService', () => {
   let userService: UserService;
-  let userRepository: Repository<UserEntity>;
+  let userRepository: Repository<User>;
   let configService: ConfigService;
   let jwtService: JwtService;
   let encryptionService: EncryptService;
@@ -28,7 +28,7 @@ describe('UserService', () => {
         UserService,
         ConfigService,
         {
-          provide: getRepositoryToken(UserEntity),
+          provide: getRepositoryToken(User),
           useClass: Repository,
         },
         JwtService,
@@ -36,8 +36,8 @@ describe('UserService', () => {
       ],
     }).compile();
     userService = module.get<UserService>(UserService);
-    userRepository = module.get<Repository<UserEntity>>(
-      getRepositoryToken(UserEntity),
+    userRepository = module.get<Repository<User>>(
+      getRepositoryToken(User),
     );
     configService = module.get<ConfigService>(ConfigService);
     jwtService = module.get<JwtService>(JwtService);
