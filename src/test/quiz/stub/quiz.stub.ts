@@ -1,14 +1,30 @@
 import { HttpStatus } from '@nestjs/common';
-import { LoginDto, RegisterUserDto, TokenData } from 'src/api/user/user.dto';
+import { OptionsDto, QuestionDto, QuizDto } from 'src/api/quiz/quiz.dto';
+import { LoginDto, TokenData } from 'src/api/user/user.dto';
 import { User } from 'src/api/user/user.entity';
 import { IResponse } from 'src/util/util';
 
-export const registerPayload: RegisterUserDto = {
-  email: 'jane@example.com',
-  password: 'haJhsjk@#4jaiijsk',
-  username: 'John#1234',
-};
+const options: OptionsDto[] = [
+  {
+    text: '3',
+    isCorrect: true,
+  },
+  {
+    text: '2',
+    isCorrect: false,
+  },
+];
 
+const questions: QuestionDto[] = [
+  {
+    title: 'Find the sum of 1 and 2',
+    options,
+  },
+];
+export const quizPayload: QuizDto = {
+  title: 'Math Quiz',
+  questions,
+};
 export const userData: any = {
   email: 'jane@example.com',
   password: '$2b$10$1is2GJ2qPDxtD4trQTnZ2eFwhs47Jg27OWVHkOZIesKmO8PO41hXS',

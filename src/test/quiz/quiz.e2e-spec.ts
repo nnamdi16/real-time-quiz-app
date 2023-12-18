@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../app.module';
-import { registerPayload, userData } from './stub/user.stub';
+import { registerPayload, userData } from './stub/quiz.stub';
 import { IResponse } from '../../util/util';
 import { User } from '../../api/user/user.entity';
 

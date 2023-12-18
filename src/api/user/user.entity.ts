@@ -1,8 +1,9 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from '../shared/base.entity';
+import { Quiz } from '../quiz/quiz.entity';
 
-@Entity({ name: 'user' })
-export class UserEntity extends BaseEntity {
+@Entity({ name: 'users' })
+export class User extends BaseEntity {
   @Column({ unique: true })
   public username: string;
 
@@ -14,4 +15,7 @@ export class UserEntity extends BaseEntity {
 
   @Column({ nullable: true })
   public refreshToken: string;
+
+  @OneToMany(() => Quiz, (quiz) => quiz.user, { cascade: true })
+  public quiz: Quiz[];
 }
