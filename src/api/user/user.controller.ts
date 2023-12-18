@@ -10,8 +10,6 @@ export class UserController {
 
   @Post('register')
   @ApiOperation({ summary: 'Endpoint to register a new user' })
-//   @ApiCreatedResponse({ type: AuthResponse })
-//   @ApiBadRequestResponse({ type: BadRequestResponse })
   async register(@Body() body: RegisterUserDto) {
     return await this.userService.registerUser(body);
   }
