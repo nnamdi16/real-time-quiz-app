@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { LoginDto, RegisterUserDto, TokenData } from 'src/api/user/user.dto';
-import { UserEntity } from 'src/api/user/user.entity';
+import { User } from 'src/api/user/user.entity';
 import { IResponse } from 'src/util/util';
 
 export const registerPayload: RegisterUserDto = {
@@ -40,7 +40,7 @@ export const tokens: {
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcyZDc2NjBhLWVhNDktNDhlNS05MTQ5LWI4MTNlOTI4ZDQ5YiIsImVtYWlsIjoiam9obmRvZUBleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoiSm9obiMxMjMiLCJpYXQiOjE3MDI2OTk2ODQsImV4cCI6MTcwMzMwNDQ4NH0.UvGGKJxI8oErJ-0fDmKk9ixk55E8q5v1k1LJjk7gklQ',
 };
 
-export const signUpResponse: IResponse<UserEntity> = {
+export const signUpResponse: IResponse<User> = {
   statusCode: HttpStatus.CREATED,
   message: 'User Registration Successful',
   status: 'success',
