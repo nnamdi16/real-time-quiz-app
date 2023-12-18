@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { LoginDto, RegisterUserDto, TokenData, TokenDto } from './user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './user.entity';
+import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { IResponse, errorHandler } from '../../util/util';
 import * as bcrypt from 'bcrypt';
@@ -21,15 +21,15 @@ import EncryptService from '../../util/encryption';
 export class UserService {
   private readonly logger = new Logger(UserService.name);
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     @Inject(EncryptService)
     private readonly encryptionService: EncryptService,
   ) {}
   //Todo: Handle database error
-  async registerUser(payload: RegisterUserDto): Promise<IResponse<UserEntity>> {
+  async registerUser(payload: RegisterUserDto): Promise<IResponse<User>> {
     try {
       const { email, password, username } = payload;
 
