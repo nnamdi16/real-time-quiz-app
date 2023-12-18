@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from '../../app.module';
 import { registerPayload, userData } from './stub/user.stub';
 import { IResponse } from '../../util/util';
-import { UserEntity } from '../../api/user/user.entity';
+import { User } from '../../api/user/user.entity';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
@@ -23,7 +23,7 @@ describe('UserController (e2e)', () => {
         .post('/v1/users/register')
         .set('Accept', 'application/json')
         .send(registerPayload())
-        .expect((response: IResponse<UserEntity>) => {
+        .expect((response: IResponse<User>) => {
           const { id, username, email } = response.data;
 
           expect(typeof id).toBe('number');
