@@ -16,6 +16,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { ENV } from '../../constants';
 import EncryptService from '../../util/encryption';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class UserService {
@@ -49,12 +50,12 @@ export class UserService {
           parseInt(this.configService.get('SALT_ROUNDS'), 10) || 10,
         );
       }
-      const data = await this.userRepository.save(payload);
+      await this.userRepository.save(payload);
       return {
         status: 'success',
         statusCode: HttpStatus.CREATED,
         message: 'User Registration Successful',
-        data,
+        data: null,
         error: null,
       };
     } catch (error) {
@@ -139,5 +140,9 @@ export class UserService {
       }),
     ]);
     return { accessToken, refreshToken };
+  }
+
+  async findUserById(id: UUID): Promise<User> {
+    return await this.userRepository.findOne({ where: { id } });
   }
 }

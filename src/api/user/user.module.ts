@@ -10,6 +10,6 @@ import EncryptService from 'src/util/encryption';
   imports: [TypeOrmModule.forFeature([User]), JwtModule.register({})],
   providers: [UserService, EncryptService],
   controllers: [UserController],
-  exports: [],
+  exports: [UserService],
 })
 export class UserModule {}

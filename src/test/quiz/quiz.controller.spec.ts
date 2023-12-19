@@ -1,49 +1,35 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from '../../api/user/user.controller';
-import { UserService } from '../../api/user/user.service';
-import {
-  loginPayload,
-  loginResponse,
-  registerPayload,
-  signUpResponse,
-} from './stub/quiz.stub';
+import { QuizController } from '../../api/quiz/quiz.controller';
+import { QuizService } from '../../api/quiz/quiz.service';
+import { quiz, quizPayload } from './stub/quiz.stub';
+import { tokenData } from '../user/stub/user.stub';
+import { Request } from 'express';
 
-describe('User controller', () => {
-  let userController: UserController;
+describe('Quiz controller', () => {
+  let quizController: QuizController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UserController],
+      controllers: [QuizController],
       providers: [
         {
-          provide: UserService,
+          provide: QuizService,
           useValue: {
-            registerUser: jest
-              .fn()
-              .mockImplementation(() => Promise.resolve(signUpResponse)),
-            login: jest
-              .fn()
-              .mockImplementation(() => Promise.resolve(loginResponse)),
+            create: jest.fn().mockImplementation(() => Promise.resolve(quiz)),
           },
         },
       ],
     }).compile();
-    userController = module.get<UserController>(UserController);
+    quizController = module.get<QuizController>(QuizController);
   });
 
-  describe('register() method should successfully save a user', () => {
-    test('should save a user', async () => {
-      const data = await userController.register({
-        ...registerPayload,
-        email: 'Jane@example.com',
-      });
-      expect(data).toEqual(signUpResponse);
-    });
-  });
-  describe('login() method should successfully authenticate a user', () => {
-    test('authenticate a user', async () => {
-      const data = await userController.login(loginPayload);
-      expect(data).toEqual(loginResponse);
+  describe('create() method should successfully create a quiz', () => {
+    test('should create a quiz', async () => {
+      const data = await quizController.create(
+        { user: tokenData } as unknown as Request,
+        quizPayload,
+      );
+      expect(data).toEqual(quiz);
     });
   });
 });

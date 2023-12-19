@@ -36,9 +36,7 @@ describe('UserService', () => {
       ],
     }).compile();
     userService = module.get<UserService>(UserService);
-    userRepository = module.get<Repository<User>>(
-      getRepositoryToken(User),
-    );
+    userRepository = module.get<Repository<User>>(getRepositoryToken(User));
     configService = module.get<ConfigService>(ConfigService);
     jwtService = module.get<JwtService>(JwtService);
     encryptionService = module.get<EncryptService>(EncryptService);
@@ -93,7 +91,7 @@ describe('UserService', () => {
           .mockImplementation(() => Promise.resolve(mockedPassword));
         const data = await userService.registerUser(registerPayload);
         expect(data).toEqual({
-          data: userData,
+          data: null,
           error: null,
           message: 'User Registration Successful',
           status: 'success',
@@ -203,6 +201,24 @@ describe('UserService', () => {
           secret: 'refreshTokenSecret',
           expiresIn: '7d',
         });
+      });
+    });
+  });
+  describe('Find User By Id', () => {
+    describe('findUserById() should return a user details', () => {
+      test('should return user details', async () => {
+        jest
+          .spyOn(userRepository, 'findOne')
+          .mockImplementationOnce(() => Promise.resolve(userData));
+
+        jest
+          .spyOn(configService, 'get')
+          .mockReturnValueOnce('accessTokenSecret')
+          .mockReturnValueOnce('1h')
+          .mockReturnValueOnce('refreshTokenSecret')
+          .mockReturnValueOnce('7d');
+        const data = await userService.findUserById(tokenData.id);
+        expect(data).toEqual(userData);
       });
     });
   });
