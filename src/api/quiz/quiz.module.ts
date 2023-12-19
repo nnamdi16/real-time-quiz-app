@@ -6,11 +6,13 @@ import { QuizController } from './quiz.controller';
 import { Quiz } from './quiz.entity';
 import { Question } from './questions.entity';
 import { Options } from './options.entity';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Quiz, Question, Options]),
     JwtModule.register({}),
+    UserModule,
   ],
   providers: [QuizService],
   controllers: [QuizController],
