@@ -8,11 +8,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
-import { IResponse, errorHandler } from '../../util/util';
+import { IResponse, errorHandler, handlePagination } from '../../util/util';
 import { Quiz } from './quiz.entity';
 import { QuizDto } from './quiz.dto';
 import { TokenData } from '../user/user.dto';
 import { UserService } from '../user/user.service';
+import { Pagination } from '../shared/pagination.dto';
 
 @Injectable()
 export class QuizService {
@@ -53,8 +54,30 @@ export class QuizService {
       return {
         status: 'success',
         statusCode: HttpStatus.CREATED,
-        message: 'Quiz created successfully Successful',
+        message: 'Quiz created successfully',
         data: null,
+        error: null,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      errorHandler(error);
+    }
+  }
+
+  async getAll(payload: Pagination): Promise<IResponse<Quiz[]>> {
+    try {
+      const { take, skip } = handlePagination(payload.page, payload.limit);
+      const data = await this.quizRepository.find({
+        take,
+        skip,
+        relations: ['questions', 'questions.options'],
+      });
+
+      return {
+        status: 'success',
+        statusCode: HttpStatus.CREATED,
+        message: 'Quiz fetched successfully',
+        data: data,
         error: null,
       };
     } catch (error) {

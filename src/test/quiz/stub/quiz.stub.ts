@@ -29,7 +29,6 @@ export const quiz = {
       options: [
         {
           text: '3',
-          isCorrect: true,
           createdBy: null,
           updatedBy: null,
           id: '53e67897-ba7c-4846-93e1-7f910446d35a',
@@ -38,7 +37,6 @@ export const quiz = {
         },
         {
           text: '2',
-          isCorrect: false,
           createdBy: null,
           updatedBy: null,
           id: '678f197e-118c-4c54-8545-e45e06e1944f',

@@ -16,6 +16,7 @@ describe('Quiz controller', () => {
           provide: QuizService,
           useValue: {
             create: jest.fn().mockImplementation(() => Promise.resolve(quiz)),
+            getAll: jest.fn().mockImplementation(() => Promise.resolve([quiz])),
           },
         },
       ],
@@ -30,6 +31,12 @@ describe('Quiz controller', () => {
         quizPayload,
       );
       expect(data).toEqual(quiz);
+    });
+  });
+  describe('getAll() method should successfully fetch all quiz', () => {
+    test('should fetch all quiz', async () => {
+      const data = await quizController.getAll({ page: 1, limit: 10 });
+      expect(data).toEqual([quiz]);
     });
   });
 });

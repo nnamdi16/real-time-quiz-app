@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { quizPayload } from './stub/quiz.stub';
+import { quiz, quizPayload } from './stub/quiz.stub';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { QuizService } from '../../api/quiz/quiz.service';
@@ -92,10 +92,40 @@ describe('QuestionService', () => {
         expect(data).toEqual({
           data: null,
           error: null,
-          message: 'Quiz created successfully Successful',
+          message: 'Quiz created successfully',
           status: 'success',
           statusCode: 201,
         });
+      });
+    });
+    describe('find() method should successfully fetch all quiz', () => {
+      test('should fetch all quizzes', async () => {
+        jest
+          .spyOn(quizRepository, 'find')
+          .mockImplementation(() =>
+            Promise.resolve([quiz] as unknown as Quiz[]),
+          );
+
+        const data = await quizService.getAll({ page: 1, limit: 10 });
+        expect(data).toEqual({
+          data: [quiz],
+          error: null,
+          message: 'Quiz fetched successfully',
+          status: 'success',
+          statusCode: 201,
+        });
+      });
+
+      test('should throw error an internal server error when an error occurs from the db', async () => {
+        try {
+          jest
+            .spyOn(quizRepository, 'find')
+            .mockImplementation(() => Promise.reject(new Error()));
+          await quizService.getAll({ page: 1, limit: 10 });
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
       });
     });
   });

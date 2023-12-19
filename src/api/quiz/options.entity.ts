@@ -7,7 +7,7 @@ export class Options extends BaseEntity {
   @Column()
   public text: string;
 
-  @Column({ default: false, name: 'is_correct' })
+  @Column({ default: false, name: 'is_correct', select: false })
   isCorrect: boolean;
 
   @ManyToOne(() => Question, (question) => question.options)

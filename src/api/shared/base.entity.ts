@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { UUID } from 'crypto';
 import {
   BeforeUpdate,
@@ -24,6 +25,7 @@ export abstract class BaseEntity {
   updatedBy: string;
 
   @BeforeUpdate()
+  @Exclude()
   updateTimestamp() {
     this.updatedDate = new Date();
   }
