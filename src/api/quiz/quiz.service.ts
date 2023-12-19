@@ -14,6 +14,7 @@ import { QuizDto } from './quiz.dto';
 import { TokenData } from '../user/user.dto';
 import { UserService } from '../user/user.service';
 import { Pagination } from '../shared/pagination.dto';
+import { UUID } from 'crypto';
 
 @Injectable()
 export class QuizService {
@@ -75,7 +76,27 @@ export class QuizService {
 
       return {
         status: 'success',
-        statusCode: HttpStatus.CREATED,
+        statusCode: HttpStatus.OK,
+        message: 'Quiz fetched successfully',
+        data: data,
+        error: null,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      errorHandler(error);
+    }
+  }
+
+  async getOne(id: UUID): Promise<IResponse<Quiz>> {
+    try {
+      const data = await this.quizRepository.findOne({
+        where: { id },
+        relations: ['questions', 'questions.options'],
+      });
+
+      return {
+        status: 'success',
+        statusCode: HttpStatus.OK,
         message: 'Quiz fetched successfully',
         data: data,
         error: null,
