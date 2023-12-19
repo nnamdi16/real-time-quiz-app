@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { QuizController } from '../../api/quiz/quiz.controller';
 import { QuizService } from '../../api/quiz/quiz.service';
-import { quiz, quizPayload } from './stub/quiz.stub';
+import { quiz, quizParams, quizPayload } from './stub/quiz.stub';
 import { tokenData } from '../user/stub/user.stub';
 import { Request } from 'express';
 
@@ -17,6 +17,7 @@ describe('Quiz controller', () => {
           useValue: {
             create: jest.fn().mockImplementation(() => Promise.resolve(quiz)),
             getAll: jest.fn().mockImplementation(() => Promise.resolve([quiz])),
+            getOne: jest.fn().mockImplementation(() => Promise.resolve(quiz)),
           },
         },
       ],
@@ -37,6 +38,12 @@ describe('Quiz controller', () => {
     test('should fetch all quiz', async () => {
       const data = await quizController.getAll({ page: 1, limit: 10 });
       expect(data).toEqual([quiz]);
+    });
+  });
+  describe('getOne() method should successfully fetch a quiz', () => {
+    test('should fetch a quiz', async () => {
+      const data = await quizController.getOne(quizParams);
+      expect(data).toEqual(quiz);
     });
   });
 });

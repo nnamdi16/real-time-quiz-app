@@ -1,4 +1,9 @@
-import { OptionsDto, QuestionDto, QuizDto } from 'src/api/quiz/quiz.dto';
+import {
+  OptionsDto,
+  QuestionDto,
+  QuizDto,
+  QuizParams,
+} from 'src/api/quiz/quiz.dto';
 
 const options: OptionsDto[] = [
   {
@@ -56,4 +61,8 @@ export const quiz = {
   id: '217d86fb-2c0f-46c7-975b-21635e1d7f62',
   createdDate: new Date('2023-12-19T00:29:20.497Z'),
   updatedDate: new Date('2023-12-19T00:29:20.497Z'),
+};
+
+export const quizParams: QuizParams = {
+  id: '217d86fb-2c0f-46c7-975b-21635e1d7f62',
 };

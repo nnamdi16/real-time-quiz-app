@@ -39,7 +39,7 @@ describe('QuestionService', () => {
     jest.clearAllMocks();
   });
 
-  describe('Create Quiz', () => {
+  describe('Quiz Service', () => {
     describe('create() method should throw error', () => {
       test('should throw error if a quiz already exist', async () => {
         try {
@@ -98,7 +98,7 @@ describe('QuestionService', () => {
         });
       });
     });
-    describe('find() method should successfully fetch all quiz', () => {
+    describe('getAll() method should successfully fetch all quiz', () => {
       test('should fetch all quizzes', async () => {
         jest
           .spyOn(quizRepository, 'find')
@@ -112,7 +112,7 @@ describe('QuestionService', () => {
           error: null,
           message: 'Quiz fetched successfully',
           status: 'success',
-          statusCode: 201,
+          statusCode: 200,
         });
       });
 
@@ -122,6 +122,34 @@ describe('QuestionService', () => {
             .spyOn(quizRepository, 'find')
             .mockImplementation(() => Promise.reject(new Error()));
           await quizService.getAll({ page: 1, limit: 10 });
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+      });
+    });
+    describe('getOne() method should successfully fetch one quiz', () => {
+      const quizId = '217d86fb-2c0f-46c7-975b-21635e1d7f62';
+      test('should fetch a quiz', async () => {
+        jest
+          .spyOn(quizRepository, 'findOne')
+          .mockImplementation(() => Promise.resolve(quiz as unknown as Quiz));
+        const data = await quizService.getOne(quizId);
+        expect(data).toEqual({
+          data: quiz,
+          error: null,
+          message: 'Quiz fetched successfully',
+          status: 'success',
+          statusCode: 200,
+        });
+      });
+
+      test('should throw error an internal server error when an error occurs from the db', async () => {
+        try {
+          jest
+            .spyOn(quizRepository, 'findOne')
+            .mockImplementation(() => Promise.reject(new Error()));
+          await quizService.getOne(quizId);
         } catch (error) {
           expect(error).toBeInstanceOf(HttpException);
           expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);

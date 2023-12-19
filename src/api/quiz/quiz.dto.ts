@@ -3,12 +3,14 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Type } from 'class-transformer';
 import { Quiz } from './quiz.entity';
+import { UUID } from 'crypto';
 
 export class OptionsDto {
   @IsNotEmpty()
@@ -96,4 +98,17 @@ export class QuizDto {
     type: [QuestionDto],
   })
   questions: QuestionDto[];
+}
+
+export class QuizParams {
+  @IsNotEmpty()
+  @IsUUID()
+  @IsString()
+  @ApiProperty({
+    description: 'Quiz id',
+    example: '217d86fb-2c0f-46c7-975b-21635e1d7f62',
+    required: true,
+    title: 'id',
+  })
+  id: UUID;
 }
