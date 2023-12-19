@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   Req,
@@ -9,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { QuizService } from './quiz.service';
-import { QuizDto } from './quiz.dto';
+import { QuizDto, QuizParams } from './quiz.dto';
 import { Request } from 'express';
 import { TokenData } from '../user/user.dto';
 import { AccessTokenGuard } from '../auth/accessToken.guard';
@@ -35,5 +36,16 @@ export class QuizController {
   @UseGuards(AccessTokenGuard)
   async getAll(@Query() query: Pagination) {
     return await this.quizService.getAll(query);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Endpoint to fetch all quizs' })
+  @ApiBearerAuth()
+  @UseGuards(AccessTokenGuard)
+  async getOne(
+    @Param()
+    params: QuizParams,
+  ) {
+    return await this.quizService.getOne(params.id);
   }
 }
