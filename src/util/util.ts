@@ -19,3 +19,10 @@ export const errorHandler = (error: Record<string, any>) => {
     );
   }
 };
+
+export const handlePagination = (
+  page: number,
+  limit: number,
+): { skip: number; take: number } => {
+  return { skip: +((page - 1) * limit ?? 0), take: +(limit ?? 10) };
+};
