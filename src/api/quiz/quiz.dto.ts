@@ -22,7 +22,6 @@ export class OptionsDto {
   text: string;
 
   @IsBoolean()
-  @IsString()
   @ApiProperty({
     description: 'The option',
     example: 'Option A',
