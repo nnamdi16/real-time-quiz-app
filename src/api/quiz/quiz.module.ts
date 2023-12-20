@@ -7,12 +7,15 @@ import { Quiz } from './quiz.entity';
 import { Question } from './questions.entity';
 import { Options } from './options.entity';
 import { UserModule } from '../user/user.module';
+import { EventBusModule } from 'src/event-bus/event-bus.module';
+import { Results } from './results.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Quiz, Question, Options]),
+    TypeOrmModule.forFeature([Quiz, Question, Options, Results]),
     JwtModule.register({}),
     UserModule,
+    EventBusModule,
   ],
   providers: [QuizService],
   controllers: [QuizController],
