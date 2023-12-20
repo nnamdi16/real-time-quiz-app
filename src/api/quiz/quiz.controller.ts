@@ -10,7 +10,12 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { QuizService } from './quiz.service';
-import { QuizDto, QuizParams } from './quiz.dto';
+import {
+  QuestionParams,
+  QuizDto,
+  QuizParams,
+  UserResponseDto,
+} from './quiz.dto';
 import { Request } from 'express';
 import { TokenData } from '../user/user.dto';
 import { AccessTokenGuard } from '../auth/accessToken.guard';
@@ -47,5 +52,41 @@ export class QuizController {
     params: QuizParams,
   ) {
     return await this.quizService.getOne(params.id);
+  }
+
+  @Post(':id/answer')
+  @ApiOperation({ summary: 'Endpoint to submit an answer for a quiz question' })
+  @ApiBearerAuth()
+  @UseGuards(AccessTokenGuard)
+  async submitAnswer(
+    @Param()
+    params: QuestionParams,
+    @Body() body: UserResponseDto,
+    @Req() auth: Request,
+  ) {
+    const { user } = auth;
+    return await this.quizService.submitAnswer(
+      params.id,
+      body,
+      user as unknown as TokenData,
+    );
+  }
+
+  @Get(':id/score')
+  @ApiOperation({
+    summary: 'Endpoint to Get the current score of the participant in a quiz',
+  })
+  @ApiBearerAuth()
+  @UseGuards(AccessTokenGuard)
+  async getScore(
+    @Param()
+    params: QuizParams,
+    @Req() auth: Request,
+  ) {
+    const { user } = auth;
+    return await this.quizService.getScore(
+      params.id,
+      user as unknown as TokenData,
+    );
   }
 }

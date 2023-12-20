@@ -1,7 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { BaseEntity } from '../shared/base.entity';
 import { Question } from './questions.entity';
 import { User } from '../user/user.entity';
+import { Results } from './results.entity';
 
 @Entity({ name: 'quizzes' })
 export class Quiz extends BaseEntity {
@@ -14,4 +22,7 @@ export class Quiz extends BaseEntity {
 
   @OneToMany(() => Question, (question) => question.quiz, { cascade: true })
   public questions: Question[];
+
+  @OneToOne(() => Results)
+  result: Results;
 }

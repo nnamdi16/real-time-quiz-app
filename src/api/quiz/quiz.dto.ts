@@ -1,4 +1,6 @@
 import {
+  ArrayNotEmpty,
+  ArrayUnique,
   IsArray,
   IsBoolean,
   IsNotEmpty,
@@ -66,6 +68,19 @@ export class QuestionDto {
   })
   options: OptionsDto[];
 }
+export class UserResponseDto {
+  @IsArray()
+  @ArrayNotEmpty({ message: 'option(s) must have a value' })
+  @ArrayUnique({ message: 'option(s) cannot contain duplicate values' })
+  @IsString({ each: true, message: 'option(s) must be a string' })
+  @ApiProperty({
+    description: 'User Options in response to the question',
+    example: ['53e67897-ba7c-4846-93e1-7f910446d35a'],
+    required: true,
+    title: 'options',
+  })
+  options: UUID[];
+}
 
 const questions: QuestionDto[] = [
   {
@@ -111,4 +126,30 @@ export class QuizParams {
     title: 'id',
   })
   id: UUID;
+}
+export class QuestionParams {
+  @IsNotEmpty()
+  @IsUUID()
+  @IsString()
+  @ApiProperty({
+    description: 'Question Id',
+    example: 'f448b672-f8e5-42b1-b4d4-1062b9065a68',
+    required: true,
+    title: 'id',
+  })
+  id: UUID;
+}
+export class NewQuizEventDto {
+  readonly quizId: string;
+  readonly quizName: string;
+}
+
+export interface UserResponse {
+  question: UUID;
+  options: UUID[];
+}
+
+export enum TestStatus {
+  ONGOING = 'ONGOING',
+  COMPLETED = 'COMPLETED',
 }

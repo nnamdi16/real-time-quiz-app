@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import morgan = require('morgan');
 import { HttpExceptionFilter } from './interceptors/exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -38,6 +39,13 @@ async function bootstrap() {
   app.use(morgan('dev'));
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useBodyParser('json', { limit: '10mb' });
+  app.connectMicroservice({
+    transport: Transport.NATS,
+    options: {
+      servers: ['nats://localhost:4222'], // Replace with your NATS server URL
+    },
+  });
+  await app.startAllMicroservices();
   await app.listen(3000);
 }
 bootstrap();
