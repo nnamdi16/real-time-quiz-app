@@ -6,12 +6,14 @@ import { UserModule } from './api/user/user.module';
 import { QuizModule } from './api/quiz/quiz.module';
 import { RefreshTokenStrategy } from './api/auth/refreshToken.strategy';
 import { AccessTokenStrategy } from './api/auth/accessToken.strategy';
+import { EventBusModule } from './event-bus/event-bus.module';
 
 @Module({
   imports: [
     DatabaseModule,
     UserModule,
     QuizModule,
+    EventBusModule,
     LoggerModule.forRoot({
       pinoHttp: {
         level: 'info',
