@@ -2,8 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { QuizController } from '../../api/quiz/quiz.controller';
 import { QuizService } from '../../api/quiz/quiz.service';
 import { quiz, quizParams, quizPayload } from './stub/quiz.stub';
-import { tokenData } from '../user/stub/user.stub';
+import { tokenData, userData } from '../user/stub/user.stub';
 import { Request } from 'express';
+import { UUID } from 'crypto';
 
 describe('Quiz controller', () => {
   let quizController: QuizController;
@@ -18,6 +19,14 @@ describe('Quiz controller', () => {
             create: jest.fn().mockImplementation(() => Promise.resolve(quiz)),
             getAll: jest.fn().mockImplementation(() => Promise.resolve([quiz])),
             getOne: jest.fn().mockImplementation(() => Promise.resolve(quiz)),
+            submitAnswer: jest
+              .fn()
+              .mockImplementation(() => Promise.resolve(null)),
+            getScore: jest.fn().mockImplementation(() =>
+              Promise.resolve({
+                score: 2,
+              }),
+            ),
           },
         },
       ],
@@ -40,10 +49,30 @@ describe('Quiz controller', () => {
       expect(data).toEqual([quiz]);
     });
   });
+  describe('submitAnswer() method should successfully submit an answer', () => {
+    const questionId = 'f448b672-f8e5-42b1-b4d4-1062b9065a68';
+    const options = [
+      '53e67897-ba7c-4846-93e1-7f910446d35a',
+    ] as unknown as UUID[];
+    test('should fetch a quiz', async () => {
+      const data = await quizController.submitAnswer(
+        { id: questionId },
+        { options },
+        userData,
+      );
+      expect(data).toEqual(null);
+    });
+  });
   describe('getOne() method should successfully fetch a quiz', () => {
     test('should fetch a quiz', async () => {
       const data = await quizController.getOne(quizParams);
       expect(data).toEqual(quiz);
+    });
+  });
+  describe('getScore() method should successfully fetch the score', () => {
+    test('should fetch the score', async () => {
+      const data = await quizController.getScore(quizParams, userData);
+      expect(data).toEqual({ score: 2 });
     });
   });
 });
