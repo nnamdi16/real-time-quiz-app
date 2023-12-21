@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
-import { LoginDto, RegisterUserDto, TokenData } from 'src/api/user/user.dto';
-import { User } from 'src/api/user/user.entity';
+import { LoginDto, RegisterUserDto, TokenData } from 'src/api/user/dto/user.dto';
+import { User } from 'src/api/user/entity/user.entity';
 import { IResponse } from 'src/util/util';
 
 export const registerPayload: RegisterUserDto = {

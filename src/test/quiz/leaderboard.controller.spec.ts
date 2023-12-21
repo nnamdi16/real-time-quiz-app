@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { QuizService } from '../../api/quiz/quiz.service';
+import { QuizService } from '../../api/quiz/services/quiz.service';
 import { mockedLeaderBoard, quizParams } from './stub/quiz.stub';
 import { userData } from '../user/stub/user.stub';
-import { LeaderBoardController } from '../../api/quiz/leaderboard.controller';
+import { LeaderBoardController } from '../../api/quiz/controller/leaderboard.controller';
 
 describe('Leaderboard controller', () => {
   let leaderboardController: LeaderBoardController;

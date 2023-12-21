@@ -1,6 +1,8 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
+  mockedLeaderBoard,
+  mockedListOfQuiz,
   mockedOngoingQuiz,
   mockedQuestion,
   quiz,
@@ -8,13 +10,13 @@ import {
 } from './stub/quiz.stub';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { QuizService } from '../../api/quiz/quiz.service';
-import { Quiz } from '../../api/quiz/quiz.entity';
+import { QuizService } from '../../api/quiz/services/quiz.service';
+import { Quiz } from '../../api/quiz/entity/quiz.entity';
 import { tokenData, userData } from '../user/stub/user.stub';
-import { UserService } from '../../api/user/user.service';
-import { Question } from '../../api/quiz/questions.entity';
-import { Results } from '../../api/quiz/results.entity';
-import { UserResponseDto } from '../../api/quiz/quiz.dto';
+import { UserService } from '../../api/user/services/user.service';
+import { Question } from '../../api/quiz/entity/questions.entity';
+import { Results } from '../../api/quiz/entity/results.entity';
+import { UserResponseDto } from '../../api/quiz/dto/quiz.dto';
 
 describe('QuestionService', () => {
   let quizService: QuizService;
@@ -111,10 +113,10 @@ describe('QuestionService', () => {
           .mockImplementation(() => Promise.resolve(false));
         jest
           .spyOn(quizRepository, 'save')
-          .mockImplementation(() => Promise.resolve(userData));
+          .mockImplementation(() => Promise.resolve(quiz as unknown as Quiz));
         const data = await quizService.create(quizPayload, tokenData);
         expect(data).toEqual({
-          data: null,
+          data: quiz.id,
           error: null,
           message: 'Quiz created successfully',
           status: 'success',
@@ -127,12 +129,12 @@ describe('QuestionService', () => {
         jest
           .spyOn(quizRepository, 'find')
           .mockImplementation(() =>
-            Promise.resolve([quiz] as unknown as Quiz[]),
+            Promise.resolve(mockedListOfQuiz.data as unknown as Quiz[]),
           );
 
         const data = await quizService.getAll({ page: 1, limit: 10 });
         expect(data).toEqual({
-          data: [quiz],
+          data: mockedListOfQuiz.data,
           error: null,
           message: 'Quiz fetched successfully',
           status: 'success',
@@ -191,7 +193,7 @@ describe('QuestionService', () => {
         expect(data).toEqual({
           data: quiz,
           error: null,
-          message: 'Successfully joined a quiz',
+          message: `Successfully joined ${quiz.title} quiz`,
           status: 'success',
           statusCode: 200,
         });
@@ -243,6 +245,7 @@ describe('QuestionService', () => {
           .mockResolvedValue(mockedOngoingQuiz as unknown as Results);
 
         jest.spyOn(mockedQuestion.options, 'every').mockReturnValue(true);
+        jest.spyOn(mockedOngoingQuiz.response, 'some').mockReturnValue(false);
         jest.spyOn(mockedQuestion.options, 'includes').mockReturnValue(true);
 
         const data = await quizService.submitAnswer(
@@ -267,7 +270,7 @@ describe('QuestionService', () => {
           statusCode: 200,
         });
       });
-      test('should fetch submit answer', async () => {
+      test('should fetch submit answer the first attempt of a quiz by a user', async () => {
         jest
           .spyOn(questionRepository, 'createQueryBuilder')
           .mockReturnValue(
@@ -281,6 +284,7 @@ describe('QuestionService', () => {
 
         jest.spyOn(mockedQuestion.options, 'every').mockReturnValue(true);
         jest.spyOn(mockedQuestion.options, 'includes').mockReturnValue(true);
+        jest.spyOn(mockedOngoingQuiz.response, 'some').mockReturnValue(false);
 
         const data = await quizService.submitAnswer(
           questionId,
@@ -314,6 +318,39 @@ describe('QuestionService', () => {
           expect(error).toBeInstanceOf(HttpException);
           expect(error.message).toBe('Question Unavailable');
           expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+        }
+      });
+      test('should throw error attempting an answered question', async () => {
+        try {
+          jest
+            .spyOn(questionRepository, 'createQueryBuilder')
+            .mockReturnValue(
+              mockQuestionQueryBuilder as unknown as SelectQueryBuilder<Question>,
+            );
+
+          jest
+            .spyOn(resultRepository, 'createQueryBuilder')
+            .mockReturnValue(
+              mockResultQueryBuilder as unknown as SelectQueryBuilder<Results>,
+            );
+
+          jest
+            .spyOn(resultRepository, 'findOne')
+            .mockResolvedValue(mockedOngoingQuiz as unknown as Results);
+
+          jest.spyOn(mockedQuestion.options, 'every').mockReturnValue(true);
+          jest.spyOn(mockedOngoingQuiz.response, 'some').mockReturnValue(true);
+          jest.spyOn(mockedQuestion.options, 'includes').mockReturnValue(true);
+
+          await quizService.submitAnswer(
+            questionId,
+            options as unknown as UserResponseDto,
+            userData,
+          );
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.message).toBe('Question already answered');
+          expect(error.getStatus()).toBe(HttpStatus.BAD_REQUEST);
         }
       });
     });
@@ -364,6 +401,56 @@ describe('QuestionService', () => {
           expect(error).toBeInstanceOf(HttpException);
           expect(error.message).toBe('Score not found');
           expect(error.getStatus()).toBe(HttpStatus.NOT_FOUND);
+        }
+      });
+    });
+    describe("getLeaderBoard() method should successfully display user's standing amongst other participant", () => {
+      const quizId = '217d86fb-2c0f-46c7-975b-21635e1d7f62';
+      const mockResultQueryBuilder = {
+        leftJoinAndSelect: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        where: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        getMany: jest
+          .fn()
+          .mockResolvedValue(mockedLeaderBoard.data as unknown as Results[]),
+      };
+
+      test('should fetch submit answer', async () => {
+        jest
+          .spyOn(resultRepository, 'findOne')
+          .mockResolvedValue(mockedOngoingQuiz as unknown as Results);
+        jest
+          .spyOn(resultRepository, 'createQueryBuilder')
+          .mockReturnValue(
+            mockResultQueryBuilder as unknown as SelectQueryBuilder<Results>,
+          );
+
+        const data = await quizService.getLeaderBoard(quizId, userData);
+
+        expect(data).toEqual({
+          data: mockedLeaderBoard.data,
+          error: null,
+          message: 'User score retrieved successfully',
+          status: 'success',
+          statusCode: 200,
+        });
+      });
+
+      test('should throw error if the query fails', async () => {
+        try {
+          jest.spyOn(resultRepository, 'findOne').mockResolvedValue(null);
+          jest
+            .spyOn(resultRepository, 'createQueryBuilder')
+            .mockReturnValue(
+              mockResultQueryBuilder as unknown as SelectQueryBuilder<Results>,
+            );
+
+          await quizService.getLeaderBoard(quizId, userData);
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.message).toBe('Access Denied');
+          expect(error.getStatus()).toBe(HttpStatus.UNAUTHORIZED);
         }
       });
     });

@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Quiz } from './quiz.entity';
-import { TestStatus, UserResponse } from './quiz.dto';
-import { BaseEntity } from '../../shared/base.entity';
-import { User } from '../user/user.entity';
+import { TestStatus, UserResponse } from '../dto/quiz.dto';
+import { BaseEntity } from '../../../shared/base.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Entity({ name: 'results' })
 export class Results extends BaseEntity {

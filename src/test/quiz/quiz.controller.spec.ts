@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { QuizController } from '../../api/quiz/quiz.controller';
-import { QuizService } from '../../api/quiz/quiz.service';
+import { QuizController } from '../../api/quiz/controller/quiz.controller';
+import { QuizService } from '../../api/quiz/services/quiz.service';
 import { quiz, quizParams, quizPayload } from './stub/quiz.stub';
 import { tokenData, userData } from '../user/stub/user.stub';
 import { Request } from 'express';
@@ -27,6 +27,7 @@ describe('Quiz controller', () => {
                 score: 2,
               }),
             ),
+            joinQuiz: jest.fn().mockImplementation(() => Promise.resolve(quiz)),
           },
         },
       ],
@@ -73,6 +74,12 @@ describe('Quiz controller', () => {
     test('should fetch the score', async () => {
       const data = await quizController.getScore(quizParams, userData);
       expect(data).toEqual({ score: 2 });
+    });
+  });
+  describe('joinQuiz() method should successfully add a user to a quiz', () => {
+    test('should fetch the questions successfully', async () => {
+      const data = await quizController.joinQuiz(quizParams);
+      expect(data).toEqual(quiz);
     });
   });
 });

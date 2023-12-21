@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { QuizService } from './quiz.service';
+import { QuizService } from '../services/quiz.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
-import { QuizController } from './quiz.controller';
-import { Quiz } from './quiz.entity';
-import { Question } from './questions.entity';
-import { Options } from './options.entity';
-import { UserModule } from '../user/user.module';
+import { QuizController } from '../controller/quiz.controller';
+import { Quiz } from '../entity/quiz.entity';
+import { Question } from '../entity/questions.entity';
+import { Options } from '../entity/options.entity';
+import { UserModule } from '../../user/module/user.module';
 import { EventBusModule } from 'src/event-bus/event-bus.module';
-import { Results } from './results.entity';
-import { LeaderBoardController } from './leaderboard.controller';
+import { Results } from '../entity/results.entity';
+import { LeaderBoardController } from '../controller/leaderboard.controller';
 
 @Module({
   imports: [

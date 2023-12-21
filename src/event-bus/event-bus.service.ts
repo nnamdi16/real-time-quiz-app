@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { NewQuizEventDto } from 'src/api/quiz/quiz.dto';
+import { NewQuizEventDto } from 'src/api/quiz/dto/quiz.dto';
 
 @Injectable()
 export class EventBusService {

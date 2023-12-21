@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from '../../api/user/user.service';
+import { UserService } from '../../api/user/services/user.service';
 import {
   registerPayload,
   userData,
@@ -9,7 +9,7 @@ import {
   tokenData,
 } from './stub/user.stub';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from '../../api/user/user.entity';
+import { User } from '../../api/user/entity/user.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -185,6 +185,27 @@ describe('UserService', () => {
           jest
             .spyOn(userRepository, 'findOne')
             .mockImplementation(() => Promise.resolve(userData));
+          jest
+            .spyOn(encryptionService, 'decrypt')
+            .mockImplementation(() => Promise.resolve(tokens.accessToken));
+          await userService.refreshToken({
+            ...tokenData,
+            refreshToken: tokens.refreshToken,
+          });
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.message).toBe('Access Denied');
+          expect(error.getStatus()).toBe(HttpStatus.FORBIDDEN);
+        }
+      });
+      test('should throw error if the user data has no token', async () => {
+        try {
+          jest.spyOn(userRepository, 'findOne').mockImplementation(() =>
+            Promise.resolve({
+              ...userData,
+              refreshToken: tokens.refreshToken,
+            }),
+          );
           jest
             .spyOn(encryptionService, 'decrypt')
             .mockImplementation(() => Promise.resolve(tokens.accessToken));

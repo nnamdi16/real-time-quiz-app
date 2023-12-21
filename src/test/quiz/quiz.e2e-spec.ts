@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from '../../app.module';
 import { registerPayload, userData } from './stub/quiz.stub';
 import { IResponse } from '../../util/util';
-import { User } from '../../api/user/user.entity';
+import { User } from '../../api/user/entity/user.entity';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;

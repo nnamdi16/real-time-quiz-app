@@ -1,9 +1,9 @@
 import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { QuizService } from './quiz.service';
-import { AccessTokenGuard } from '../auth/accessToken.guard';
-import { TokenData } from '../user/user.dto';
-import { QuizParams } from './quiz.dto';
+import { QuizService } from '../services/quiz.service';
+import { AccessTokenGuard } from '../../auth/accessToken.guard';
+import { TokenData } from '../../user/dto/user.dto';
+import { QuizParams } from '../dto/quiz.dto';
 import { Request } from 'express';
 
 @Controller('v1/leaderboard')

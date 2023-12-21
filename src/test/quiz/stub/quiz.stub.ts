@@ -3,7 +3,7 @@ import {
   QuestionDto,
   QuizDto,
   QuizParams,
-} from 'src/api/quiz/quiz.dto';
+} from 'src/api/quiz/dto/quiz.dto';
 
 const options: OptionsDto[] = [
   {
@@ -141,6 +141,31 @@ export const mockedLeaderBoard = {
       user: {
         username: 'jane#123',
       },
+    },
+  ],
+  error: null,
+};
+
+export const mockedListOfQuiz = {
+  status: 'success',
+  statusCode: 200,
+  message: 'Quiz fetched successfully',
+  data: [
+    {
+      id: '217d86fb-2c0f-46c7-975b-21635e1d7f62',
+      createdDate: '2023-12-19T00:29:20.497Z',
+      updatedDate: '2023-12-19T00:29:20.497Z',
+      createdBy: null,
+      updatedBy: null,
+      title: 'Maths Quiz',
+    },
+    {
+      id: '8ea68374-db33-419c-8c88-e2a2807cb891',
+      createdDate: '2023-12-19T01:30:37.470Z',
+      updatedDate: '2023-12-19T01:30:37.470Z',
+      createdBy: null,
+      updatedBy: null,
+      title: 'Maths Quiz 2',
     },
   ],
   error: null,
