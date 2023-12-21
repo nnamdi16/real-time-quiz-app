@@ -4,7 +4,7 @@ import { UserController } from '../controller/user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entity/user.entity';
 import { JwtModule } from '@nestjs/jwt';
-import EncryptService from 'src/util/encryption';
+import EncryptService from '../../../util/encryption';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), JwtModule.register({})],

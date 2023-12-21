@@ -7,7 +7,12 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { LoginDto, RegisterUserDto, TokenData, TokenDto } from '../dto/user.dto';
+import {
+  LoginDto,
+  RegisterUserDto,
+  TokenData,
+  TokenDto,
+} from '../dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entity/user.entity';
 import { Repository } from 'typeorm';
