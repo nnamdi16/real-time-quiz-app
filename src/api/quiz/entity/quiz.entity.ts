@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { BaseEntity } from '../../shared/base.entity';
+import { BaseEntity } from '../../../shared/base.entity';
 import { Question } from './questions.entity';
-import { User } from '../user/user.entity';
+import { User } from '../../user/entity/user.entity';
 import { Results } from './results.entity';
 
 @Entity({ name: 'quizzes' })

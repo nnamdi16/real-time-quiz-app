@@ -1,8 +1,8 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { UserService } from './user.service';
-import { LoginDto, RegisterUserDto, TokenData } from './user.dto';
-import { RefreshTokenGuard } from '../auth/refreshToken.guard';
+import { UserService } from '../services/user.service';
+import { LoginDto, RegisterUserDto, TokenData } from '../dto/user.dto';
+import { RefreshTokenGuard } from '../../auth/refreshToken.guard';
 import { Request } from 'express';
 
 @Controller('v1/users')

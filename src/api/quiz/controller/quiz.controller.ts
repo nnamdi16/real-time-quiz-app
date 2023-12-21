@@ -9,17 +9,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { QuizService } from './quiz.service';
+import { QuizService } from '../services/quiz.service';
 import {
   QuestionParams,
   QuizDto,
   QuizParams,
   UserResponseDto,
-} from './quiz.dto';
+} from '../dto/quiz.dto';
 import { Request } from 'express';
-import { TokenData } from '../user/user.dto';
-import { AccessTokenGuard } from '../auth/accessToken.guard';
-import { Pagination } from '../../shared/pagination.dto';
+import { TokenData } from '../../user/dto/user.dto';
+import { AccessTokenGuard } from '../../auth/accessToken.guard';
+import { Pagination } from '../../../shared/pagination.dto';
 
 @Controller('v1/quizzes')
 @ApiTags('quizzes')
@@ -70,6 +70,17 @@ export class QuizController {
       body,
       user as unknown as TokenData,
     );
+  }
+
+  @Post(':id/participate')
+  @ApiOperation({ summary: 'Endpoint to participate in a quiz' })
+  @ApiBearerAuth()
+  @UseGuards(AccessTokenGuard)
+  async joinQuiz(
+    @Param()
+    params: QuizParams,
+  ) {
+    return await this.quizService.joinQuiz(params.id);
   }
 
   @Get(':id/score')

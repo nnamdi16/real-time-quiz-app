@@ -7,16 +7,16 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { LoginDto, RegisterUserDto, TokenData, TokenDto } from './user.dto';
+import { LoginDto, RegisterUserDto, TokenData, TokenDto } from '../dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './user.entity';
+import { User } from '../entity/user.entity';
 import { Repository } from 'typeorm';
-import { IResponse, errorHandler } from '../../util/util';
+import { IResponse, errorHandler } from '../../../util/util';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { ENV } from '../../constants';
-import EncryptService from '../../util/encryption';
+import { ENV } from '../../../constants';
+import EncryptService from '../../../util/encryption';
 import { UUID } from 'crypto';
 
 @Injectable()
@@ -128,7 +128,6 @@ export class UserService {
         user.refreshToken,
       );
       if (decryptToken !== token) {
-        console.log('We are doing awesome here');
         throw new ForbiddenException({
           statusCode: HttpStatus.FORBIDDEN,
           message: 'Access Denied',

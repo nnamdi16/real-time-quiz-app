@@ -9,15 +9,15 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
-import { IResponse, errorHandler, handlePagination } from '../../util/util';
-import { Quiz } from './quiz.entity';
-import { QuizDto, TestStatus, UserResponse, UserResponseDto } from './quiz.dto';
-import { TokenData } from '../user/user.dto';
-import { UserService } from '../user/user.service';
-import { Pagination } from '../../shared/pagination.dto';
+import { IResponse, errorHandler, handlePagination } from '../../../util/util';
+import { Quiz } from '../entity/quiz.entity';
+import { QuizDto, TestStatus, UserResponse, UserResponseDto } from '../dto/quiz.dto';
+import { TokenData } from '../../user/dto/user.dto';
+import { UserService } from '../../user/services/user.service';
+import { Pagination } from '../../../shared/pagination.dto';
 import { UUID } from 'crypto';
-import { Question } from './questions.entity';
-import { Results } from './results.entity';
+import { Question } from '../entity/questions.entity';
+import { Results } from '../entity/results.entity';
 
 @Injectable()
 export class QuizService {
@@ -38,7 +38,7 @@ export class QuizService {
   async create(
     payload: QuizDto,
     tokenData: TokenData,
-  ): Promise<IResponse<Quiz>> {
+  ): Promise<IResponse<string>> {
     try {
       const { title } = payload;
 
@@ -60,12 +60,12 @@ export class QuizService {
           message: 'quiz title already exists',
         });
       }
-      await this.quizRepository.save({ ...payload, user });
+      const { id } = await this.quizRepository.save({ ...payload, user });
       return {
         status: 'success',
         statusCode: HttpStatus.CREATED,
         message: 'Quiz created successfully',
-        data: null,
+        data: id,
         error: null,
       };
     } catch (error) {
@@ -80,7 +80,6 @@ export class QuizService {
       const data = await this.quizRepository.find({
         take,
         skip,
-        relations: ['questions', 'questions.options'],
       });
 
       return {
@@ -114,16 +113,16 @@ export class QuizService {
       errorHandler(error);
     }
   }
-  async joinQuiz(id: UUID): Promise<IResponse<Quiz>> {
+  async joinQuiz(quizId: UUID): Promise<IResponse<Quiz>> {
     try {
       const data = await this.quizRepository.findOne({
-        where: { id },
+        where: { id: quizId },
         relations: ['questions', 'questions.options'],
       });
       return {
         status: 'success',
         statusCode: HttpStatus.OK,
-        message: 'Successfully joined a quiz',
+        message: `Successfully joined ${data.title} quiz`,
         data,
         error: null,
       };
@@ -149,7 +148,6 @@ export class QuizService {
         )
         .where('questions.id = :id', { id })
         .getOne();
-
       if (!data?.options.length) {
         throw new NotFoundException({
           statusCode: HttpStatus.NOT_FOUND,
@@ -182,6 +180,15 @@ export class QuizService {
           score: compareUserAnswer ? 1 : 0,
         });
       } else {
+        const isAnsweredQuestion = ongoingQuiz.response.some(
+          (obj) => obj.question === userResponse.question,
+        );
+        if (isAnsweredQuestion) {
+          throw new BadRequestException({
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: 'Question already answered',
+          });
+        }
         await this.resultRepository
           .createQueryBuilder()
           .update(Results)

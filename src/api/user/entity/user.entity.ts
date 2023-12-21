@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany } from 'typeorm';
-import { BaseEntity } from '../../shared/base.entity';
-import { Quiz } from '../quiz/quiz.entity';
-import { Results } from '../quiz/results.entity';
+import { BaseEntity } from '../../../shared/base.entity';
+import { Quiz } from '../../quiz/entity/quiz.entity';
+import { Results } from '../../quiz/entity/results.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {

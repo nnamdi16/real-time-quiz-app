@@ -11,7 +11,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Type } from 'class-transformer';
-import { Quiz } from './quiz.entity';
+import { Quiz } from '../entity/quiz.entity';
 import { UUID } from 'crypto';
 
 export class OptionsDto {
