@@ -1,8 +1,9 @@
 import { Module, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { NatService } from './nats.service';
+import { WebsocketGateway } from '../quiz/quiz.gateway';
 
 @Module({
-  providers: [NatService],
+  providers: [NatService, WebsocketGateway],
   exports: [NatService],
 })
 export class NatsModule implements OnModuleInit, OnModuleDestroy {

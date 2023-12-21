@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../app.module';
-import { registerPayload, userData } from './stub/quiz.stub';
 import { IResponse } from '../../util/util';
 import { User } from '../../api/user/entity/user.entity';
+import { registerPayload, userData } from '../user/stub/user.stub';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
@@ -22,13 +22,13 @@ describe('UserController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/v1/users/register')
         .set('Accept', 'application/json')
-        .send(registerPayload())
+        .send(registerPayload)
         .expect((response: IResponse<User>) => {
           const { id, username, email } = response.data;
 
           expect(typeof id).toBe('number');
-          expect(username).toEqual(userData().username);
-          expect(email).toEqual(userData().email);
+          expect(username).toEqual(userData.username);
+          expect(email).toEqual(userData.email);
           // expect(password).toBeUndefined();
         })
         .expect(HttpStatus.CREATED);

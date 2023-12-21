@@ -6,14 +6,14 @@ import { UserModule } from './api/user/module/user.module';
 import { QuizModule } from './api/quiz/module/quiz.module';
 import { RefreshTokenStrategy } from './api/auth/refreshToken.strategy';
 import { AccessTokenStrategy } from './api/auth/accessToken.strategy';
-import { EventBusModule } from './event-bus/event-bus.module';
+import { WebsocketGateway } from './api/quiz/quiz.gateway';
 
 @Module({
   imports: [
     DatabaseModule,
     UserModule,
     QuizModule,
-    EventBusModule,
+
     LoggerModule.forRoot({
       pinoHttp: {
         level: 'info',
@@ -30,6 +30,6 @@ import { EventBusModule } from './event-bus/event-bus.module';
     }),
   ],
   controllers: [],
-  providers: [RefreshTokenStrategy, AccessTokenStrategy],
+  providers: [RefreshTokenStrategy, AccessTokenStrategy, WebsocketGateway],
 })
 export class AppModule {}
