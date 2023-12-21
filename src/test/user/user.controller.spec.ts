@@ -6,7 +6,9 @@ import {
   loginResponse,
   registerPayload,
   signUpResponse,
+  tokenData,
 } from './stub/user.stub';
+import { Request } from 'express';
 
 describe('User controller', () => {
   let userController: UserController;
@@ -22,6 +24,9 @@ describe('User controller', () => {
               .fn()
               .mockImplementation(() => Promise.resolve(signUpResponse)),
             login: jest
+              .fn()
+              .mockImplementation(() => Promise.resolve(loginResponse)),
+            refreshToken: jest
               .fn()
               .mockImplementation(() => Promise.resolve(loginResponse)),
           },
@@ -43,6 +48,14 @@ describe('User controller', () => {
   describe('login() method should successfully authenticate a user', () => {
     test('authenticate a user', async () => {
       const data = await userController.login(loginPayload);
+      expect(data).toEqual(loginResponse);
+    });
+  });
+  describe('refreshToken() method should generate new tokens', () => {
+    test('should generate tokens', async () => {
+      const data = await userController.refreshToken({
+        user: tokenData,
+      } as unknown as Request);
       expect(data).toEqual(loginResponse);
     });
   });
