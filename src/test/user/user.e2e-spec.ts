@@ -2,12 +2,22 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../app.module';
-import { registerPayload, userData } from './stub/user.stub';
-import { IResponse } from '../../util/util';
-import { User } from '../../api/user/entity/user.entity';
+import { registerPayload } from './stub/user.stub';
+import { DatabaseModule } from '../../db/database.module';
+import { clearDatabase } from '../migration/util';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
+
+  beforeAll(async () => {
+    const appModule = await Test.createTestingModule({
+      imports: [DatabaseModule],
+    }).compile();
+
+    app = appModule.createNestApplication();
+    await app.init();
+    await clearDatabase(app);
+  });
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -17,19 +27,20 @@ describe('UserController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     await app.init();
   });
+
   describe('/auth/register (POST)', () => {
-    it('it should register a user and return the new user object', () => {
+    it('it should register a user successfully', () => {
       return request(app.getHttpServer())
         .post('/v1/users/register')
         .set('Accept', 'application/json')
         .send(registerPayload)
-        .expect((response: IResponse<User>) => {
-          const { id, username, email } = response.data;
+        .expect((response) => {
+          console.log(response);
+          console.log(response.body);
 
-          expect(typeof id).toBe('number');
-          expect(username).toEqual(userData().username);
-          expect(email).toEqual(userData().email);
-          // expect(password).toBeUndefined();
+          expect(response.body.status).toBe('success');
+          expect(response.body.statusCode).toEqual(HttpStatus.CREATED);
+          expect(response.body.message).toBe('User Registration Successful');
         })
         .expect(HttpStatus.CREATED);
     });
