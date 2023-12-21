@@ -19,7 +19,7 @@ import {
 import { Request } from 'express';
 import { TokenData } from '../user/user.dto';
 import { AccessTokenGuard } from '../auth/accessToken.guard';
-import { Pagination } from '../shared/pagination.dto';
+import { Pagination } from '../../shared/pagination.dto';
 
 @Controller('v1/quizzes')
 @ApiTags('quizzes')

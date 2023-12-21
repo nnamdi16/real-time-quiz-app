@@ -124,3 +124,24 @@ export const mockedOngoingQuiz = {
   createdDate: '2023-12-20T17:23:51.780Z',
   updatedDate: '2023-12-20T17:23:51.780Z',
 };
+
+export const mockedLeaderBoard = {
+  status: 'success',
+  statusCode: 200,
+  message: 'User score retrieved successfully',
+  data: [
+    {
+      score: 1,
+      user: {
+        username: 'John#123',
+      },
+    },
+    {
+      score: 3,
+      user: {
+        username: 'jane#123',
+      },
+    },
+  ],
+  error: null,
+};

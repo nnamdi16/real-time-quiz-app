@@ -157,6 +157,80 @@ describe('UserService', () => {
           status: 'success',
           statusCode: 200,
           message: 'Authentication successful',
+          data: tokens,
+          error: null,
+        });
+      });
+    });
+  });
+  describe('refresh token', () => {
+    describe('refreshToken() method should throw error', () => {
+      test('should throw error if user details is not found', async () => {
+        try {
+          jest
+            .spyOn(userRepository, 'findOne')
+            .mockImplementation(() => Promise.resolve(null));
+          await userService.refreshToken({
+            ...tokenData,
+            refreshToken: tokens.refreshToken,
+          });
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.message).toBe('Access Denied');
+          expect(error.getStatus()).toBe(HttpStatus.FORBIDDEN);
+        }
+      });
+      test('should throw error if the decrypted token is not the same as refresh token', async () => {
+        try {
+          jest
+            .spyOn(userRepository, 'findOne')
+            .mockImplementation(() => Promise.resolve(userData));
+          jest
+            .spyOn(encryptionService, 'decrypt')
+            .mockImplementation(() => Promise.resolve(tokens.accessToken));
+          await userService.refreshToken({
+            ...tokenData,
+            refreshToken: tokens.refreshToken,
+          });
+        } catch (error) {
+          expect(error).toBeInstanceOf(HttpException);
+          expect(error.message).toBe('Access Denied');
+          expect(error.getStatus()).toBe(HttpStatus.FORBIDDEN);
+        }
+      });
+    });
+    describe('refresh() should generate a fresh access token and refresh token', () => {
+      test('should generate a new access token and refresh token', async () => {
+        const encyption =
+          'b89f6aa96025d0946a95f9961c43be24_16095195effd5448d39d5dc4b65a96f3d7710b0b4c4165369b62ba6543e91d44aeeb8dd02376efa9a7d0450d2ed6be833a44542ec139fa2093e7b08c393cbd2695c2e6b9a4cc8c410996bf1b3d512d17aa7dc4c0c655df8bfbad70bbab292cede4c7acfdaa346768e05051cb272acfabb6dcf6acd3a177949e7c28d9aebf5e585c17a7bf8917d01540530c404b21a53e8f2b87056d4e51ccba0c5ce3294400d5b6952162dfd6dea1217533262ae172849b1206124db51b1ebcbdb73e168325bbb944662ba277e5864f0a4a24c8af7e09744e60279c4bc0753ad4547504ad92906058cb2b696fcf4885cbad5302937ab908580a9259df90136ab038f49834825f_d5be88e518f1d539e5ea6cae4d8e053e';
+
+        jest
+          .spyOn(userRepository, 'findOne')
+          .mockImplementation(() =>
+            Promise.resolve({ ...userData, refreshToken: tokens.refreshToken }),
+          );
+        jest
+          .spyOn(userRepository, 'update')
+          .mockImplementation(() =>
+            Promise.resolve({} as unknown as UpdateResult),
+          );
+        jest
+          .spyOn(encryptionService, 'decrypt')
+          .mockImplementation(() => Promise.resolve(tokens.refreshToken));
+        jest
+          .spyOn(userService, 'getTokens')
+          .mockImplementation(() => Promise.resolve(tokens));
+        jest
+          .spyOn(encryptionService, 'encrypt')
+          .mockImplementation(() => Promise.resolve(encyption));
+        const data = await userService.refreshToken({
+          ...tokenData,
+          refreshToken: tokens.refreshToken,
+        });
+        expect(data).toEqual({
+          status: 'success',
+          statusCode: 200,
+          message: 'Authentication successful',
           data: {
             accessToken:
               'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcyZDc2NjBhLWVhNDktNDhlNS05MTQ5LWI4MTNlOTI4ZDQ5YiIsImVtYWlsIjoiam9obmRvZUBleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoiSm9obiMxMjMiLCJpYXQiOjE3MDI2OTk2ODQsImV4cCI6MTcwMjcwMzI4NH0.bLmIUt_jSLRM-bEjpSdTzqKHUTSACDjSjnLmxIMaNTg',

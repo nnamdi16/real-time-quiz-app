@@ -9,6 +9,7 @@ import { Options } from './options.entity';
 import { UserModule } from '../user/user.module';
 import { EventBusModule } from 'src/event-bus/event-bus.module';
 import { Results } from './results.entity';
+import { LeaderBoardController } from './leaderboard.controller';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { Results } from './results.entity';
     EventBusModule,
   ],
   providers: [QuizService],
-  controllers: [QuizController],
+  controllers: [QuizController, LeaderBoardController],
   exports: [],
 })
 export class QuizModule {}

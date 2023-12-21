@@ -1,5 +1,5 @@
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
-import { BaseEntity } from '../shared/base.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { BaseEntity } from '../../shared/base.entity';
 import { Quiz } from '../quiz/quiz.entity';
 import { Results } from '../quiz/results.entity';
 
@@ -20,6 +20,6 @@ export class User extends BaseEntity {
   @OneToMany(() => Quiz, (quiz) => quiz.user, { cascade: true })
   public quiz: Quiz[];
 
-  @OneToOne(() => Results)
-  result: Results;
+  @OneToMany(() => Results, (result) => result.user)
+  results: Results[];
 }

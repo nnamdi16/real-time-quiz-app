@@ -14,7 +14,7 @@ import { Quiz } from './quiz.entity';
 import { QuizDto, TestStatus, UserResponse, UserResponseDto } from './quiz.dto';
 import { TokenData } from '../user/user.dto';
 import { UserService } from '../user/user.service';
-import { Pagination } from '../shared/pagination.dto';
+import { Pagination } from '../../shared/pagination.dto';
 import { UUID } from 'crypto';
 import { Question } from './questions.entity';
 import { Results } from './results.entity';
@@ -223,6 +223,41 @@ export class QuizService {
           message: 'Score not found',
         });
       }
+      return {
+        status: 'success',
+        statusCode: HttpStatus.OK,
+        message: 'User score retrieved successfully',
+        data,
+        error: null,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      errorHandler(error);
+    }
+  }
+
+  async getLeaderBoard(
+    quizId: UUID,
+    user: TokenData,
+  ): Promise<IResponse<Results[]>> {
+    try {
+      const checkUserParticipation = await this.resultRepository.findOne({
+        where: { user: { id: user.id } },
+      });
+      if (!checkUserParticipation) {
+        throw new UnauthorizedException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Access Denied',
+        });
+      }
+      const data = await this.resultRepository
+        .createQueryBuilder('results')
+        .leftJoinAndSelect('results.user', 'users')
+        .leftJoinAndSelect('results.quiz', 'quiz')
+        .where('quiz.id = :quizId', { quizId: quizId })
+        .select(['results.score', 'users.username'])
+        .orderBy('results.score')
+        .getMany();
       return {
         status: 'success',
         statusCode: HttpStatus.OK,
