@@ -8,12 +8,16 @@ import {
   Subscription,
   connect,
 } from 'nats';
-import { ENV } from 'src/constants';
+import { ENV } from '../../constants';
+import { WebsocketGateway } from '../quiz/quiz.gateway';
 
 @Injectable()
 export class NatService {
   private natsConnection: NatsConnection;
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly websocketGateway: WebsocketGateway,
+  ) {}
 
   async connect() {
     const natsUrl =
@@ -38,7 +42,7 @@ export class NatService {
         message: 'connection not established.',
       });
     }
-
+    this.websocketGateway.sendEventToClients(subject, data);
     this.natsConnection.publish(subject, data);
   }
 
