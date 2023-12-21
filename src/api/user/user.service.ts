@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   HttpStatus,
   Inject,
   Injectable,
@@ -29,7 +30,7 @@ export class UserService {
     @Inject(EncryptService)
     private readonly encryptionService: EncryptService,
   ) {}
-  //Todo: Handle database error
+
   async registerUser(payload: RegisterUserDto): Promise<IResponse<User>> {
     try {
       const { email, password, username } = payload;
@@ -37,7 +38,7 @@ export class UserService {
       const isExistingUser = await this.userRepository.exist({
         where: [{ email }, { username }],
       });
-      //Todo: Look into this
+
       if (isExistingUser) {
         throw new BadRequestException({
           statusCode: HttpStatus.BAD_REQUEST,
@@ -93,6 +94,52 @@ export class UserService {
         username: userDetails.username,
       };
 
+      const { accessToken, refreshToken } = await this.updateToken(tokenData);
+      return {
+        status: 'success',
+        statusCode: HttpStatus.OK,
+        message: 'Authentication successful',
+        data: { accessToken, refreshToken },
+        error: null,
+      };
+    } catch (error) {
+      this.logger.error(error);
+      errorHandler(error);
+    }
+  }
+
+  async refreshToken(
+    payload: TokenData & { refreshToken: string },
+  ): Promise<IResponse<TokenDto>> {
+    try {
+      const { refreshToken: token, id } = payload;
+      const user = await this.userRepository.findOne({
+        where: [{ id }],
+      });
+
+      if (!user?.refreshToken) {
+        throw new ForbiddenException({
+          statusCode: HttpStatus.FORBIDDEN,
+          message: 'Access Denied',
+        });
+      }
+
+      const decryptToken = await this.encryptionService.decrypt(
+        user.refreshToken,
+      );
+      if (decryptToken !== token) {
+        console.log('We are doing awesome here');
+        throw new ForbiddenException({
+          statusCode: HttpStatus.FORBIDDEN,
+          message: 'Access Denied',
+        });
+      }
+
+      const tokenData: TokenData = {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+      };
       const { accessToken, refreshToken } = await this.updateToken(tokenData);
       return {
         status: 'success',
