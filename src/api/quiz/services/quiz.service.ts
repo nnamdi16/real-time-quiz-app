@@ -11,7 +11,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { IResponse, errorHandler, handlePagination } from '../../../util/util';
 import { Quiz } from '../entity/quiz.entity';
-import { QuizDto, TestStatus, UserResponse, UserResponseDto } from '../dto/quiz.dto';
+import {
+  QuizDto,
+  TestStatus,
+  UserResponse,
+  UserResponseDto,
+} from '../dto/quiz.dto';
 import { TokenData } from '../../user/dto/user.dto';
 import { UserService } from '../../user/services/user.service';
 import { Pagination } from '../../../shared/pagination.dto';
@@ -31,8 +36,6 @@ export class QuizService {
     private readonly resultRepository: Repository<Results>,
     @Inject(UserService)
     private readonly userService: UserService,
-    // @Inject(EventBusService)
-    // private readonly eventService: EventBusService,
   ) {}
 
   async create(
