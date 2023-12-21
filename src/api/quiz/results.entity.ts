@@ -1,7 +1,7 @@
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { Quiz } from './quiz.entity';
 import { TestStatus, UserResponse } from './quiz.dto';
-import { BaseEntity } from '../shared/base.entity';
+import { BaseEntity } from '../../shared/base.entity';
 import { User } from '../user/user.entity';
 
 @Entity({ name: 'results' })
@@ -15,11 +15,9 @@ export class Results extends BaseEntity {
   @Column('jsonb', { default: [] })
   response: UserResponse[];
 
-  @OneToOne(() => Quiz)
-  @JoinColumn()
+  @ManyToOne(() => Quiz, (quiz) => quiz.results)
   public quiz: Quiz;
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.results)
   public user: User;
 }

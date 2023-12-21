@@ -1,5 +1,5 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { BaseEntity } from '../shared/base.entity';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { BaseEntity } from '../../shared/base.entity';
 import { Quiz } from './quiz.entity';
 import { Options } from './options.entity';
 
@@ -12,6 +12,5 @@ export class Question extends BaseEntity {
   options: Options[];
 
   @ManyToOne(() => Quiz, (quiz) => quiz.questions)
-  @JoinColumn({ name: 'quiz_id' })
   public quiz: Quiz;
 }
