@@ -22,7 +22,7 @@ describe('UserController (e2e)', () => {
       return request(app.getHttpServer())
         .post('/v1/users/register')
         .set('Accept', 'application/json')
-        .send(registerPayload())
+        .send(registerPayload)
         .expect((response: IResponse<User>) => {
           const { id, username, email } = response.data;
 
