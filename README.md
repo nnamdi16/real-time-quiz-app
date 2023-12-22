@@ -6,7 +6,6 @@ Welcome to Real-time quiz application!. The real-time quiz application is a back
 * Getting Started
   * Prerequisites
   * Setting up NATS Server
-  * Setting up Postgres db
   * Running the application
 * Running Test
 * Swagger Documentation
