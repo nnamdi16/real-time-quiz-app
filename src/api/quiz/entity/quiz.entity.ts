@@ -15,6 +15,6 @@ export class Quiz extends BaseEntity {
   @OneToMany(() => Question, (question) => question.quiz, { cascade: true })
   public questions: Question[];
 
-  @OneToMany(() => Results, (result) => result.quiz)
+  @OneToMany(() => Results, (result) => result.quiz, { cascade: true })
   results: Results[];
 }
