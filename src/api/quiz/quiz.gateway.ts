@@ -18,7 +18,7 @@ export class WebsocketGateway
   handleConnection(client: Socket, ...args: any[]) {
     const clientId = client.id;
     this.connectedClients.add(clientId);
-    console.log(`Client connected: ${clientId}`);
+    console.log(`Client connected: ${clientId}, ${args}`);
   }
 
   handleDisconnect(client: Socket) {
