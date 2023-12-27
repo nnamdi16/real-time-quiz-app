@@ -1,31 +1,30 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../../app.module';
 import { loginPayload, registerPayload } from './stub/user.stub';
-import { DatabaseModule } from '../../db/database.module';
-import { clearDatabase } from '../migration/util';
+import { TestDbModule } from '../db/test-db.module';
+import { QuizModule } from '../../api/quiz/module/quiz.module';
+import { UserModule } from '../../api/user/module/user.module';
+import { WebsocketGateway } from '../../api/quiz/quiz.gateway';
+import { AccessTokenStrategy } from '../../api/auth/accessToken.strategy';
+import { RefreshTokenStrategy } from '../../api/auth/refreshToken.strategy';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const appModule = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [TestDbModule, QuizModule, UserModule],
+      controllers: [],
+      providers: [RefreshTokenStrategy, AccessTokenStrategy, WebsocketGateway],
     }).compile();
 
     app = appModule.createNestApplication();
     await app.init();
-    await clearDatabase(app);
   });
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
+  afterAll(async () => {
+    await app.close();
   });
 
   describe('/auth/register (POST)', () => {
@@ -61,6 +60,7 @@ describe('UserController (e2e)', () => {
         .expect(HttpStatus.CREATED);
     });
   });
+
   describe('/auth/refresh (POST)', () => {
     it('it should generate token for a user successfully', async () => {
       const loginResponse = await request(app.getHttpServer())
