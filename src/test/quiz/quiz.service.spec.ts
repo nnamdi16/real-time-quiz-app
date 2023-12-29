@@ -239,7 +239,6 @@ describe('QuestionService', () => {
           .mockReturnValue(
             mockResultQueryBuilder as unknown as SelectQueryBuilder<Results>,
           );
-
         jest
           .spyOn(resultRepository, 'findOne')
           .mockResolvedValue(mockedOngoingQuiz as unknown as Results);
@@ -256,6 +255,8 @@ describe('QuestionService', () => {
         expect(mockResultQueryBuilder.update).toHaveBeenCalledWith(Results);
         expect(mockResultQueryBuilder.set).toHaveBeenCalledWith({
           score: expect.any(Function),
+          totalScore: expect.any(Function),
+          streakCount: expect.any(Number),
           response: expect.any(Array),
         });
         expect(mockResultQueryBuilder.where).toHaveBeenCalledWith('id = :id', {
@@ -270,7 +271,7 @@ describe('QuestionService', () => {
           statusCode: 200,
         });
       });
-      test('should fetch submit answer the first attempt of a quiz by a user', async () => {
+      test('should submit answer at the first attempt of a quiz by a user', async () => {
         jest
           .spyOn(questionRepository, 'createQueryBuilder')
           .mockReturnValue(
