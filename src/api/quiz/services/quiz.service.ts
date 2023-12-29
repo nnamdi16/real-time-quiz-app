@@ -169,9 +169,8 @@ export class QuizService {
         },
       });
 
-      const compareUserAnswer = data.options.every((option) =>
-        options.includes(option.id),
-      );
+      const { streakCount, streakScore, score, correctAnswer } =
+        this.calculateStreak(data, ongoingQuiz, options);
       const userResponse: UserResponse = { question: data.id, options };
 
       if (!ongoingQuiz) {
@@ -180,7 +179,9 @@ export class QuizService {
           quiz: data.quiz,
           user,
           response: [userResponse],
-          score: compareUserAnswer ? 1 : 0,
+          score,
+          totalScore: streakCount + score,
+          streakCount,
         });
       } else {
         const isAnsweredQuestion = ongoingQuiz.response.some(
@@ -196,13 +197,15 @@ export class QuizService {
           .createQueryBuilder()
           .update(Results)
           .set({
-            score: () => `score + ${compareUserAnswer ? 1 : 0}`,
+            score: () => `score + ${score}`,
+            totalScore: () => `totalScore + ${streakScore} + ${score}`,
+            streakCount,
             response: [...ongoingQuiz.response, userResponse],
           })
           .where('id = :id', { id: ongoingQuiz.id })
           .execute();
       }
-      const responseMessage = compareUserAnswer ? 'correct' : 'incorrect';
+      const responseMessage = correctAnswer ? 'correct' : 'incorrect';
       return {
         status: 'success',
         statusCode: HttpStatus.OK,
@@ -214,6 +217,28 @@ export class QuizService {
       this.logger.error(error);
       errorHandler(error);
     }
+  }
+
+  calculateStreak(question: Question, result: Results, options: UUID[]) {
+    let streakCount: number;
+    let streakScore: number;
+    const correctAnswer = question.options.every((option) => {
+      return options.includes(option.id);
+    });
+    const score = correctAnswer ? 1 : 0;
+    if (!result) {
+      streakCount = !correctAnswer ? 0 : 1;
+      streakScore = correctAnswer ? question.quiz.streakScore : 0;
+      return { streakCount, streakScore, correctAnswer, score };
+    }
+    streakCount =
+      result.streakCount + 1 === question.quiz.streak || !correctAnswer
+        ? 0
+        : result.streakCount + 1;
+
+    streakScore =
+      streakCount === 0 && correctAnswer ? question.quiz.streakScore : 0;
+    return { streakCount, streakScore, correctAnswer, score };
   }
 
   async getScore(id: UUID, user: TokenData): Promise<IResponse<Results>> {
