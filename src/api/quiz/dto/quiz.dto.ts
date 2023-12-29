@@ -4,6 +4,8 @@ import {
   IsArray,
   IsBoolean,
   IsNotEmpty,
+  IsNumber,
+  IsPositive,
   IsString,
   IsUUID,
   ValidateNested,
@@ -101,6 +103,28 @@ export class QuizDto {
     title: 'title',
   })
   title: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  @ApiProperty({
+    description: 'Quiz title',
+    example: 'Maths Quiz',
+    required: true,
+    title: 'title',
+  })
+  streak: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  @ApiProperty({
+    description: 'Quiz title',
+    example: 'Maths Quiz',
+    required: true,
+    title: 'title',
+  })
+  streakScore: number;
 
   @IsArray()
   @ValidateNested({ each: true })
