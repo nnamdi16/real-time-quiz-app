@@ -25,6 +25,8 @@ const questions: QuestionDto[] = [
 export const quizPayload: QuizDto = {
   title: 'Math Quiz',
   questions,
+  streak: 3,
+  streakScore: 10,
 };
 export const quiz = {
   title: 'Maths Quiz',
