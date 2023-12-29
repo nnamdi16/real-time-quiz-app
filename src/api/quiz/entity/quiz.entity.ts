@@ -17,4 +17,17 @@ export class Quiz extends BaseEntity {
 
   @OneToMany(() => Results, (result) => result.quiz, { cascade: true })
   results: Results[];
+
+  @Column({
+    comment: 'The number of correct answers to win a streak',
+    default: 3,
+  })
+  public streak: number;
+
+  @Column({
+    name: 'streak_score',
+    comment: 'The score attached to winning a streak',
+    default: 10,
+  })
+  public streakScore: number;
 }
