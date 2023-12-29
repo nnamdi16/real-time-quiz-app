@@ -9,6 +9,23 @@ export class Results extends BaseEntity {
   @Column({ default: 0 })
   public score: number;
 
+  @Column({ default: 0, name: 'total_score' })
+  public totalScore: number;
+
+  @Column({
+    default: 0,
+    name: 'streak_score',
+    comment: 'Score as a result of attaining a streak',
+  })
+  public streakScore: number;
+
+  @Column({
+    default: 0,
+    name: 'streak_count',
+    comment: 'Keeps count of successive right answers',
+  })
+  public streakCount: number;
+
   @Column({ enum: TestStatus, type: 'enum', default: TestStatus.ONGOING })
   public status: TestStatus;
 
