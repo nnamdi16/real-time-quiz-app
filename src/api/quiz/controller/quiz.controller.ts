@@ -20,6 +20,7 @@ import { Request } from 'express';
 import { TokenData } from '../../user/dto/user.dto';
 import { AccessTokenGuard } from '../../auth/accessToken.guard';
 import { Pagination } from '../../../shared/pagination.dto';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('v1/quizzes')
 @ApiTags('quizzes')
@@ -44,7 +45,7 @@ export class QuizController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Endpoint to fetch all quizs' })
+  @ApiOperation({ summary: 'Endpoint to get details of a particular quiz' })
   @ApiBearerAuth()
   @UseGuards(AccessTokenGuard)
   async getOne(
@@ -99,5 +100,11 @@ export class QuizController {
       params.id,
       user as unknown as TokenData,
     );
+  }
+
+  @MessagePattern('quiz')
+  async getHello(data: string) {
+    console.log('data: ', data);
+    return 'Hello World!';
   }
 }
