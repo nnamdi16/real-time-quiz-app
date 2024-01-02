@@ -8,7 +8,6 @@ import { QuizModule } from '../../api/quiz/module/quiz.module';
 import { UserModule } from '../../api/user/module/user.module';
 import { RefreshTokenStrategy } from '../../api/auth/refreshToken.strategy';
 import { AccessTokenStrategy } from '../../api/auth/accessToken.strategy';
-import { WebsocketGateway } from '../../api/quiz/quiz.gateway';
 import { Quiz } from '../../api/quiz/entity/quiz.entity';
 
 describe('Quiz Controller (e2e)', () => {
@@ -21,7 +20,7 @@ describe('Quiz Controller (e2e)', () => {
     const appModule = await Test.createTestingModule({
       imports: [TestDbModule, QuizModule, UserModule],
       controllers: [],
-      providers: [RefreshTokenStrategy, AccessTokenStrategy, WebsocketGateway],
+      providers: [RefreshTokenStrategy, AccessTokenStrategy],
     }).compile();
 
     app = appModule.createNestApplication();

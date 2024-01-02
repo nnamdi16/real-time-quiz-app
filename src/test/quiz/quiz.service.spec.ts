@@ -17,6 +17,7 @@ import { UserService } from '../../api/user/services/user.service';
 import { Question } from '../../api/quiz/entity/questions.entity';
 import { Results } from '../../api/quiz/entity/results.entity';
 import { UserResponseDto } from '../../api/quiz/dto/quiz.dto';
+import { NatService } from '../../api/nats/nats.service';
 
 describe('QuestionService', () => {
   let quizService: QuizService;
@@ -46,6 +47,15 @@ describe('QuestionService', () => {
             findUserById: jest
               .fn()
               .mockImplementation(() => Promise.resolve(userData)),
+          },
+        },
+        {
+          provide: NatService,
+          useValue: {
+            publish: jest.fn().mockImplementation(() => Promise.resolve()),
+            subscribeQuizCreatedEvent: jest
+              .fn()
+              .mockImplementation(() => Promise.resolve()),
           },
         },
       ],
