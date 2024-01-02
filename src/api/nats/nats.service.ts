@@ -1,22 +1,15 @@
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  ConnectionOptions,
-  Msg,
-  NatsConnection,
-  NatsError,
-  Subscription,
-  connect,
-} from 'nats';
+import { ConnectionOptions, NatsConnection, connect } from 'nats';
 import { ENV } from '../../constants';
-import { WebsocketGateway } from '../quiz/quiz.gateway';
+import { AppGateway } from '../../app.gateway';
 
 @Injectable()
 export class NatService {
   private natsConnection: NatsConnection;
   constructor(
     private readonly configService: ConfigService,
-    private readonly websocketGateway: WebsocketGateway,
+    private readonly appGateway: AppGateway,
   ) {}
 
   async connect() {
@@ -42,14 +35,14 @@ export class NatService {
         message: 'connection not established.',
       });
     }
-    this.websocketGateway.sendEventToClients(subject, data);
-    this.natsConnection.publish(subject, data);
+    this.natsConnection.publish(subject, data.message);
   }
 
-  subscribe(
-    subject: string,
-    callback: (err: NatsError | null, msg: Msg) => void,
-  ): Subscription {
+  async subscribeQuizCreatedEvent() {
+    await this.subscribe('quiz_created');
+  }
+
+  async subscribe(subject: string): Promise<void> {
     if (!this.natsConnection) {
       throw new BadRequestException({
         statusCode: HttpStatus.BAD_REQUEST,
@@ -57,6 +50,16 @@ export class NatService {
       });
     }
 
-    return this.natsConnection.subscribe(subject, { callback });
+    this.natsConnection.subscribe(subject, {
+      callback: (err, msg) => {
+        if (err) {
+          throw new BadRequestException({
+            status: HttpStatus.BAD_REQUEST,
+            message: err.message,
+          });
+        }
+        this.appGateway.sendEventToClients('message', msg.data);
+      },
+    });
   }
 }

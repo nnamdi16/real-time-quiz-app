@@ -23,6 +23,7 @@ import { Pagination } from '../../../shared/pagination.dto';
 import { UUID } from 'crypto';
 import { Question } from '../entity/questions.entity';
 import { Results } from '../entity/results.entity';
+import { NatService } from '../../nats/nats.service';
 
 @Injectable()
 export class QuizService {
@@ -36,6 +37,8 @@ export class QuizService {
     private readonly resultRepository: Repository<Results>,
     @Inject(UserService)
     private readonly userService: UserService,
+    @Inject(NatService)
+    private readonly natservice: NatService,
   ) {}
 
   async create(
@@ -64,6 +67,11 @@ export class QuizService {
         });
       }
       const { id } = await this.quizRepository.save({ ...payload, user });
+
+      await this.natservice.subscribeQuizCreatedEvent();
+      this.natservice.publish('quiz_created', {
+        message: `A new quiz ${payload.title} has been created`,
+      });
       return {
         status: 'success',
         statusCode: HttpStatus.CREATED,
@@ -250,7 +258,7 @@ export class QuizService {
         .where('user.id = :userId', { userId: user.id })
         .andWhere('quiz.id = :quizId', { quizId: id })
         .andWhere('result.status = :status', { status: TestStatus.ONGOING })
-        .select(['result.score'])
+        .select(['result.score', 'result.totalScore', 'result.streakScore'])
         .getOne();
       if (!data) {
         throw new NotFoundException({

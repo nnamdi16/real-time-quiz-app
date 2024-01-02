@@ -5,7 +5,6 @@ import { loginPayload, registerPayload } from './stub/user.stub';
 import { TestDbModule } from '../db/test-db.module';
 import { QuizModule } from '../../api/quiz/module/quiz.module';
 import { UserModule } from '../../api/user/module/user.module';
-import { WebsocketGateway } from '../../api/quiz/quiz.gateway';
 import { AccessTokenStrategy } from '../../api/auth/accessToken.strategy';
 import { RefreshTokenStrategy } from '../../api/auth/refreshToken.strategy';
 
@@ -16,7 +15,7 @@ describe('UserController (e2e)', () => {
     const appModule = await Test.createTestingModule({
       imports: [TestDbModule, QuizModule, UserModule],
       controllers: [],
-      providers: [RefreshTokenStrategy, AccessTokenStrategy, WebsocketGateway],
+      providers: [RefreshTokenStrategy, AccessTokenStrategy],
     }).compile();
 
     app = appModule.createNestApplication();

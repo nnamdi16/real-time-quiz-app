@@ -9,14 +9,18 @@ import { Options } from '../entity/options.entity';
 import { UserModule } from '../../user/module/user.module';
 import { Results } from '../entity/results.entity';
 import { LeaderBoardController } from '../controller/leaderboard.controller';
+import { AppGateway } from '../../../app.gateway';
+import { NatsModule } from '../../nats/nats.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Quiz, Question, Options, Results]),
     JwtModule.register({}),
     UserModule,
+    AppGateway,
+    NatsModule,
   ],
-  providers: [QuizService],
+  providers: [QuizService, AppGateway],
   controllers: [QuizController, LeaderBoardController],
   exports: [],
 })

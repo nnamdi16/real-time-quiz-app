@@ -8,13 +8,18 @@
     <title>Real-time-Quiz-Application </title>
   </head>
   <body>
+    <h1>Real-Time application Quiz</h1>
+    <div id="output"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <script>
       const socket = io.connect('http://localhost:3000'); // Change the URL based on your server address
-      socket.on('example.subject', (data) => {
-        console.log('Received real-time update:', data);
-        // Handle real-time updates in the UI
-      });
+      socket.on('connect', () => {
+      console.log('Connected to WebSocket server');
+    });
+
+    socket.on('message', (data) => {
+      document.getElementById('output').innerText = data;
+    });
     </script>
   </body>
 </html>

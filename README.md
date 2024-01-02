@@ -51,6 +51,9 @@ nats subscribe ">" -s 0.0.0.0:4222
 ```
 
 
+To view the notification you need to run the index.html file in the src/views folder in a browser.
+
+
 ### Running the application
 - Clone the [repository](https://github.com/nnamdi16/real-time-quiz-app.git)
 - Install dependencies by running the following commands below:
