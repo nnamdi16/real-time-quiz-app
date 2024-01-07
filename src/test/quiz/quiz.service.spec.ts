@@ -53,9 +53,7 @@ describe('QuestionService', () => {
           provide: NatService,
           useValue: {
             publish: jest.fn().mockImplementation(() => Promise.resolve()),
-            subscribeQuizCreatedEvent: jest
-              .fn()
-              .mockImplementation(() => Promise.resolve()),
+            subscribe: jest.fn().mockImplementation(() => Promise.resolve()),
           },
         },
       ],
@@ -199,7 +197,7 @@ describe('QuestionService', () => {
         jest
           .spyOn(quizRepository, 'findOne')
           .mockImplementation(() => Promise.resolve(quiz as unknown as Quiz));
-        const data = await quizService.joinQuiz(quizId);
+        const data = await quizService.joinQuiz(quizId, tokenData);
         expect(data).toEqual({
           data: quiz,
           error: null,
@@ -214,7 +212,7 @@ describe('QuestionService', () => {
           jest
             .spyOn(quizRepository, 'findOne')
             .mockImplementation(() => Promise.reject(new Error()));
-          await quizService.joinQuiz(quizId);
+          await quizService.joinQuiz(quizId, tokenData);
         } catch (error) {
           expect(error).toBeInstanceOf(HttpException);
           expect(error.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -256,6 +254,9 @@ describe('QuestionService', () => {
         jest.spyOn(mockedQuestion.options, 'every').mockReturnValue(true);
         jest.spyOn(mockedOngoingQuiz.response, 'some').mockReturnValue(false);
         jest.spyOn(mockedQuestion.options, 'includes').mockReturnValue(true);
+        jest
+          .spyOn(quizService, 'getQuizResults')
+          .mockResolvedValue(mockedLeaderBoard.data as unknown as Results[]);
 
         const data = await quizService.submitAnswer(
           questionId,
@@ -296,6 +297,9 @@ describe('QuestionService', () => {
         jest.spyOn(mockedQuestion.options, 'every').mockReturnValue(true);
         jest.spyOn(mockedQuestion.options, 'includes').mockReturnValue(true);
         jest.spyOn(mockedOngoingQuiz.response, 'some').mockReturnValue(false);
+        jest
+          .spyOn(quizService, 'getQuizResults')
+          .mockResolvedValue(mockedLeaderBoard.data as unknown as Results[]);
 
         const data = await quizService.submitAnswer(
           questionId,
