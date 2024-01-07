@@ -80,8 +80,13 @@ export class QuizController {
   async joinQuiz(
     @Param()
     params: QuizParams,
+    @Req() auth: Request,
   ) {
-    return await this.quizService.joinQuiz(params.id);
+    const { user } = auth;
+    return await this.quizService.joinQuiz(
+      params.id,
+      user as unknown as TokenData,
+    );
   }
 
   @Get(':id/score')
@@ -100,11 +105,5 @@ export class QuizController {
       params.id,
       user as unknown as TokenData,
     );
-  }
-
-  @MessagePattern('quiz')
-  async getHello(data: string) {
-    console.log('data: ', data);
-    return 'Hello World!';
   }
 }
