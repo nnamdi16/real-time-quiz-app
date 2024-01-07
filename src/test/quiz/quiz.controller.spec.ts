@@ -78,7 +78,9 @@ describe('Quiz controller', () => {
   });
   describe('joinQuiz() method should successfully add a user to a quiz', () => {
     test('should fetch the questions successfully', async () => {
-      const data = await quizController.joinQuiz(quizParams);
+      const data = await quizController.joinQuiz(quizParams, {
+        user: tokenData,
+      } as unknown as Request);
       expect(data).toEqual(quiz);
     });
   });
