@@ -38,10 +38,6 @@ export class NatService {
     this.natsConnection.publish(subject, data.message);
   }
 
-  async subscribeQuizCreatedEvent() {
-    await this.subscribe('quiz_created');
-  }
-
   async subscribe(subject: string): Promise<void> {
     if (!this.natsConnection) {
       throw new BadRequestException({
