@@ -7,13 +7,14 @@ import { QuizModule } from '../../api/quiz/module/quiz.module';
 import { UserModule } from '../../api/user/module/user.module';
 import { AccessTokenStrategy } from '../../api/auth/accessToken.strategy';
 import { RefreshTokenStrategy } from '../../api/auth/refreshToken.strategy';
+import { NatsModule } from '../../api/nats/nats.module';
 
 describe('UserController (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const appModule = await Test.createTestingModule({
-      imports: [TestDbModule, QuizModule, UserModule],
+      imports: [TestDbModule, QuizModule, UserModule, NatsModule],
       controllers: [],
       providers: [RefreshTokenStrategy, AccessTokenStrategy],
     }).compile();

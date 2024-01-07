@@ -9,6 +9,7 @@ import { UserModule } from '../../api/user/module/user.module';
 import { RefreshTokenStrategy } from '../../api/auth/refreshToken.strategy';
 import { AccessTokenStrategy } from '../../api/auth/accessToken.strategy';
 import { Quiz } from '../../api/quiz/entity/quiz.entity';
+import { NatsModule } from '../../api/nats/nats.module';
 
 describe('Quiz Controller (e2e)', () => {
   let app: INestApplication;
@@ -18,7 +19,7 @@ describe('Quiz Controller (e2e)', () => {
 
   beforeAll(async () => {
     const appModule = await Test.createTestingModule({
-      imports: [TestDbModule, QuizModule, UserModule],
+      imports: [TestDbModule, QuizModule, UserModule, NatsModule],
       controllers: [],
       providers: [RefreshTokenStrategy, AccessTokenStrategy],
     }).compile();
