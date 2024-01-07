@@ -68,7 +68,7 @@ export class QuizService {
       }
       const { id } = await this.quizRepository.save({ ...payload, user });
 
-      await this.natservice.subscribeQuizCreatedEvent();
+      await this.natservice.subscribe('quiz_created');
       this.natservice.publish('quiz_created', {
         message: `A new quiz ${payload.title} has been created`,
       });
@@ -124,11 +124,15 @@ export class QuizService {
       errorHandler(error);
     }
   }
-  async joinQuiz(quizId: UUID): Promise<IResponse<Quiz>> {
+  async joinQuiz(quizId: UUID, user: TokenData): Promise<IResponse<Quiz>> {
     try {
       const data = await this.quizRepository.findOne({
         where: { id: quizId },
         relations: ['questions', 'questions.options'],
+      });
+      await this.natservice.subscribe('join_quiz');
+      this.natservice.publish('join_quiz', {
+        message: `${user.username} joined ${data.title}`,
       });
       return {
         status: 'success',
@@ -180,7 +184,6 @@ export class QuizService {
       const { streakCount, streakScore, score, correctAnswer } =
         this.calculateStreak(data, ongoingQuiz, options);
       const userResponse: UserResponse = { question: data.id, options };
-
       if (!ongoingQuiz) {
         await this.resultRepository.save({
           status: TestStatus.ONGOING,
@@ -214,6 +217,9 @@ export class QuizService {
           .execute();
       }
       const responseMessage = correctAnswer ? 'correct' : 'incorrect';
+      await this.natservice.subscribe('quiz_leaderboard');
+      const quizResults = await this.getQuizResults(data.quiz.id);
+      this.natservice.publish('quiz_leaderboard', quizResults);
       return {
         status: 'success',
         statusCode: HttpStatus.OK,
@@ -278,6 +284,16 @@ export class QuizService {
       errorHandler(error);
     }
   }
+  async getQuizResults(quizId: UUID): Promise<Results[]> {
+    return await this.resultRepository
+      .createQueryBuilder('results')
+      .leftJoinAndSelect('results.user', 'users')
+      .leftJoinAndSelect('results.quiz', 'quiz')
+      .where('quiz.id = :quizId', { quizId: quizId })
+      .select(['results.score', 'users.username'])
+      .orderBy('results.score')
+      .getMany();
+  }
 
   async getLeaderBoard(
     quizId: UUID,
@@ -285,7 +301,7 @@ export class QuizService {
   ): Promise<IResponse<Results[]>> {
     try {
       const checkUserParticipation = await this.resultRepository.findOne({
-        where: { user: { id: user.id } },
+        where: { user: { id: user.id }, quiz: { id: quizId } },
       });
       if (!checkUserParticipation) {
         throw new UnauthorizedException({
@@ -293,14 +309,7 @@ export class QuizService {
           message: 'Access Denied',
         });
       }
-      const data = await this.resultRepository
-        .createQueryBuilder('results')
-        .leftJoinAndSelect('results.user', 'users')
-        .leftJoinAndSelect('results.quiz', 'quiz')
-        .where('quiz.id = :quizId', { quizId: quizId })
-        .select(['results.score', 'users.username'])
-        .orderBy('results.score')
-        .getMany();
+      const data = await this.getQuizResults(quizId);
       return {
         status: 'success',
         statusCode: HttpStatus.OK,
